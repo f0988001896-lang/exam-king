@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>醫師二階國考解題王 - 114年內科專區</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft JhengHei", sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            padding: 20px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header .subtitle {
+            font-size: 1.3em;
+            margin: 10px 0;
+            font-weight: 600;
+        }
+
+        .header p {
+            font-size: 1em;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+
+        .stats-bar {
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .stat-item {
+            color: white;
+            text-align: center;
+        }
+
+        .stat-item .number {
+            font-size: 2em;
+            font-weight: bold;
+            display: block;
+        }
+
+        .stat-item .label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .info-banner {
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .info-banner h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .info-banner ul {
+            margin-left: 20px;
+            color: #374151;
+            line-height: 1.8;
+        }
+
+        .question-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .question-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .question-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 12px rgba(0,0,0,0.2);
+        }
+
+        .question-card.unlocked {
+            border: 2px solid #10b981;
+            background: linear-gradient(to bottom, #ecfdf5 0%, white 100%);
+        }
+
+        .question-card.no-video {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .question-card.no-video:hover {
+            transform: none;
+        }
+
+        .question-number {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 8px 18px;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 15px;
+        }
+
+        .question-title {
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #1f2937;
+            line-height: 1.5;
+        }
+
+        .question-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        .status-badge.ready {
+            background: #fbbf24;
+            color: #78350f;
+        }
+
+        .status-badge.coming-soon {
+            background: #e5e7eb;
+            color: #6b7280;
+        }
+
+        .unlock-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+            font-size: 0.95em;
+        }
+
+        .unlock-btn:hover {
+            background: #5568d3;
+        }
+
+        .unlocked-badge {
+            background: #10b981;
+            color: white;
+            padding: 10px 18px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.95em;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #1f2937;
+        }
+
+        .payment-info {
+            background: #f3f4f6;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .payment-info p {
+            margin: 10px 0;
+            color: #374151;
+        }
+
+        .payment-info strong {
+            color: #667eea;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1em;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+        }
+
+        .btn-secondary {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .btn-secondary:hover {
+            background: #d1d5db;
+        }
+
+        .video-container {
+            margin: 20px 0;
+            background: #000;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .video-container iframe {
+            width: 100%;
+            height: 350px;
+            border: none;
+        }
+
+        .video-tips {
+            background: #fef3c7;
+            border-left: 4px solid #fbbf24;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+
+        .video-tips p {
+            color: #78350f;
+            margin: 5px 0;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .header .subtitle {
+                font-size: 1.1em;
+            }
+
+            .question-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-bar {
+                flex-direction: column;
+            }
+
+            .modal-content {
+                padding: 25px;
+            }
+
+            .video-container iframe {
+                height: 250px;
+            }
+        }
+
+        .footer {
+            text-align: center;
+            color: white;
+            padding: 30px;
+            opacity: 0.8;
+        }
+
+        .admin-note {
+            background: rgba(239, 68, 68, 0.1);
+            border: 2px dashed #ef4444;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            color: #991b1b;
+        }
+
+        .admin-note strong {
+            color: #dc2626;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏥 醫師二階國考解題王</h1>
+            <div class="subtitle">114年度內科專區</div>
+            <p>精準解析 · 隨買隨看 · 每題只要 NT$5</p>
+        </div>
+
+        <div class="stats-bar">
+            <div class="stat-item">
+                <span class="number" id="totalQuestions">10</span>
+                <span class="label">題目總數</span>
+            </div>
+            <div class="stat-item">
+                <span class="number" id="readyCount">0</span>
+                <span class="label">已上架</span>
+            </div>
+            <div class="stat-item">
+                <span class="number" id="unlockedCount">0</span>
+                <span class="label">我已解鎖</span>
+            </div>
+            <div class="stat-item">
+                <span class="number" id="totalSpent">$0</span>
+                <span class="label">累積投資</span>
+            </div>
+        </div>
+
+        <div class="info-banner">
+            <h3>📚 114年內科考古題解析</h3>
+            <ul>
+                <li>✅ 逐題精準解析,直擊考點</li>
+                <li>✅ 每題5元,解鎖後永久觀看</li>
+                <li>✅ 影片清晰,講解詳細</li>
+                <li>⏰ 陸續更新中,敬請期待!</li>
+            </ul>
+        </div>
+
+        <div class="question-grid" id="questionGrid">
+            <!-- 題目卡片將由 JavaScript 動態生成 -->
+        </div>
+
+        <div class="footer">
+            <p>© 2024 醫師二階國考解題王</p>
+            <p style="margin-top: 5px; font-size: 0.9em;">助你一臂之力,順利通過國考 💪</p>
+        </div>
+    </div>
+
+    <!-- 付款/觀看 Modal -->
+    <div class="modal" id="questionModal">
+        <div class="modal-content">
+            <div class="modal-header" id="modalTitle"></div>
+            <div id="modalBody"></div>
+            <div class="modal-buttons" id="modalButtons">
+                <button class="btn btn-secondary" onclick="closeModal()">關閉</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 題目資料庫
+        // 📝 如何新增影片: 把對應題目的 youtubeId 從 "" 改成你的YouTube影片ID即可
+        const questions = [
+            {
+                id: "114-1",
+                year: 114,
+                subject: "內科",
+                questionNumber: 1,
+                title: "114年內科第1題",
+                youtubeId: "7v6fx1L2C24", // ✅ 已上架!
+                price: 5
+            },
+            {
+                id: "114-2",
+                year: 114,
+                subject: "內科",
+                questionNumber: 2,
+                title: "114年內科第2題",
+                youtubeId: "",
+                price: 5
+            },
+            {
+                id: "114-3",
+                year: 114,
+                subject: "內科",
+                questionNumber: 3,
+                title: "114年內科第3題",
+                youtubeId: "",
+                price: 5
+            },
+            {
+                id: "114-4",
+                year: 114,
+                subject: "內科",
+                questionNumber: 4,
+                title: "114年內科第4題",
+                youtubeId: "",
+                price: 5
+            },
+            {
+                id: "114-5",
+                year: 114,
+                subject: "內科",
+                questionNumber: 5,
+                title: "114年內科第5題",
+                youtubeId: "",
+                price: 5
+            },
+            {
+                id: "114-6",
+                year: 114,
+                subject: "內科",
+                questionNumber: 6,
+                title: "114年內科第6題",
+                youtubeId: "",
+                price: 5
+            },
+            {
+                id: "114-7",
+                year: 114,
+                subject: "內科",
+                questionNumber: 7,
+                title: "114年內科第7題",
+                youtubeId: "",
+                price: 5
+            },
+            {
+                id: "114-8",
+                year: 114,
+                subject: "內科",
+                questionNumber: 8,
+                title: "114年內科第8題",
+                youtubeId: "",
+                price: 5
+            },
+            {
+                id: "114-9",
+                year: 114,
+                subject: "內科",
+                questionNumber: 9,
+                title: "114年內科第9題",
+                youtubeId: "",
+                price: 5
+            },
+            {
+                id: "114-10",
+                year: 114,
+                subject: "內科",
+                questionNumber: 10,
+                title: "114年內科第10題",
+                youtubeId: "",
+                price: 5
+            }
+        ];
+
+        // LocalStorage 管理
+        function getUnlockedQuestions() {
+            const unlocked = localStorage.getItem('unlockedQuestions');
+            return unlocked ? JSON.parse(unlocked) : [];
+        }
+
+        function unlockQuestion(questionId) {
+            const unlocked = getUnlockedQuestions();
+            if (!unlocked.includes(questionId)) {
+                unlocked.push(questionId);
+                localStorage.setItem('unlockedQuestions', JSON.stringify(unlocked));
+            }
+        }
+
+        function isQuestionUnlocked(questionId) {
+            return getUnlockedQuestions().includes(questionId);
+        }
+
+        // 更新統計數據
+        function updateStats() {
+            const unlockedCount = getUnlockedQuestions().length;
+            const readyCount = questions.filter(q => q.youtubeId).length;
+            
+            document.getElementById('totalQuestions').textContent = questions.length;
+            document.getElementById('readyCount').textContent = readyCount;
+            document.getElementById('unlockedCount').textContent = unlockedCount;
+            document.getElementById('totalSpent').textContent = `$${unlockedCount * 5}`;
+        }
+
+        // 渲染題目卡片
+        function renderQuestions() {
+            const grid = document.getElementById('questionGrid');
+            grid.innerHTML = '';
+
+            questions.forEach(question => {
+                const isUnlocked = isQuestionUnlocked(question.id);
+                const hasVideo = question.youtubeId && question.youtubeId.length > 0;
+                
+                const card = document.createElement('div');
+                card.className = `question-card ${isUnlocked ? 'unlocked' : ''} ${!hasVideo ? 'no-video' : ''}`;
+                
+                if (hasVideo || isUnlocked) {
+                    card.onclick = () => openQuestion(question);
+                }
+
+                let actionButton = '';
+                if (!hasVideo) {
+                    actionButton = '<span class="status-badge coming-soon">🔜 準備中</span>';
+                } else if (isUnlocked) {
+                    actionButton = '<span class="unlocked-badge">✅ 已解鎖</span>';
+                } else {
+                    actionButton = `<button class="unlock-btn" onclick="event.stopPropagation(); openQuestion(questions.find(q => q.id === '${question.id}'))">NT$${question.price} 解鎖</button>`;
+                }
+
+                card.innerHTML = `
+                    <div class="question-number">${question.id}</div>
+                    <div class="question-title">${question.title}</div>
+                    <div class="question-meta">
+                        ${hasVideo ? '<span class="status-badge ready">📹 可觀看</span>' : '<span class="status-badge coming-soon">等待上架</span>'}
+                        ${actionButton}
+                    </div>
+                `;
+
+                grid.appendChild(card);
+            });
+        }
+
+        // 開啟題目 Modal
+        function openQuestion(question) {
+            const hasVideo = question.youtubeId && question.youtubeId.length > 0;
+            
+            if (!hasVideo) {
+                alert('此題目解析影片尚未上架,敬請期待! 🙏');
+                return;
+            }
+
+            const modal = document.getElementById('questionModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalBody = document.getElementById('modalBody');
+            const isUnlocked = isQuestionUnlocked(question.id);
+
+            modalTitle.textContent = question.title;
+
+            if (isUnlocked) {
+                // 已解鎖 - 顯示影片
+                modalBody.innerHTML = `
+                    <div class="video-tips">
+                        <p>💡 <strong>觀看提示:</strong></p>
+                        <p>• 建議全螢幕觀看以獲得最佳學習效果</p>
+                        <p>• 可調整播放速度(YouTube齒輪圖示)</p>
+                        <p>• 此題已永久解鎖,隨時可回來複習</p>
+                    </div>
+                    <div class="video-container">
+                        <iframe 
+                            src="https://www.youtube.com/embed/${question.youtubeId}?rel=0" 
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                            allowfullscreen>
+                        </iframe>
+                    </div>
+                `;
+            } else {
+                // 未解鎖 - 顯示付款選項
+                modalBody.innerHTML = `
+                    <div class="payment-info">
+                        <p><strong>題目:</strong> ${question.title}</p>
+                        <p><strong>科目:</strong> ${question.subject}</p>
+                        <p><strong>價格:</strong> NT$${question.price}</p>
+                        <p style="margin-top: 15px; color: #6b7280;">💰 解鎖後可永久觀看,不限次數</p>
+                    </div>
+                    <p style="margin: 20px 0; color: #6b7280; font-size: 0.95em;">
+                        點擊「前往付款」後將導向綠界金流頁面<br>
+                        <span style="font-size: 0.85em;">(目前為測試模式,點擊即可解鎖)</span>
+                    </p>
+                    <button class="btn btn-primary" id="paymentBtn" style="width: 100%;">
+                        💳 前往付款 NT$${question.price}
+                    </button>
+                `;
+                
+                // 重新綁定付款按鈕事件
+                setTimeout(() => {
+                    const payBtn = document.getElementById('paymentBtn');
+                    if (payBtn) {
+                        payBtn.onclick = () => processPayment(question.id);
+                    }
+                }, 0);
+            }
+
+            modal.classList.add('active');
+        }
+
+        // 關閉 Modal
+        function closeModal() {
+            document.getElementById('questionModal').classList.remove('active');
+        }
+
+        // 處理付款 (目前是模擬,之後串接綠界)
+        function processPayment(questionId) {
+            // TODO: 這裡之後要串接綠界API
+            
+            if (confirm('⚠️ 測試模式\n\n正式版會跳轉到綠界付款頁面\n\n現在要模擬完成付款嗎?')) {
+                unlockQuestion(questionId);
+                alert('✅ 付款成功!題目已解鎖');
+                closeModal();
+                renderQuestions();
+                updateStats();
+                
+                // 重新開啟該題目以顯示影片
+                const question = questions.find(q => q.id === questionId);
+                setTimeout(() => openQuestion(question), 300);
+            }
+        }
+
+        // 點擊 Modal 外部關閉
+        document.getElementById('questionModal').addEventListener('click', (e) => {
+            if (e.target.id === 'questionModal') {
+                closeModal();
+            }
+        });
+
+        // 初始化
+        updateStats();
+        renderQuestions();
+
+        // 開發者工具 - 在console輸入 resetProgress() 可清空已購買記錄
+        function resetProgress() {
+            if (confirm('確定要清空所有已購買記錄嗎?')) {
+                localStorage.removeItem('unlockedQuestions');
+                location.reload();
+            }
+        }
+        console.log('💡 開發提示: 在console輸入 resetProgress() 可清空測試資料');
+    </script>
+</body>
+</html>
